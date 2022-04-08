@@ -19,7 +19,7 @@ mysqldump \
   -u ${DATABASE_USER} \
   --password=${DATABASE_PASSWORD} \
   --skip-add-locks \
-  --allow-keywords ${DATABASE_DATABASE} \
+  --allow-keywords ${DATABASE_NAME} \
  	| gzip -9 \
   | openssl enc -aes-256-cbc -salt -e -pass pass:$CRYPT_PASSPHRASE \
   | mc pipe backup/${S3_BUCKET}/${BACKUP_NAME_PREFIX}-`date +%Y-%m-%dT%H-%M-%S`.sql.gz.enc
