@@ -28,7 +28,7 @@ jobs:
       - name: Extract pg_dump version
         id: pg_dump_version
         run: |
-          pg_version=$(pg_dump --version | grep -oP '\d+\.\d+')
+          pg_version=$(pg_dump --version | grep -oP '\d+\.\d+ | head -n1')
           echo "$pg_version" >> $GITHUB_STEP_SUMMARY
           echo "PG_VERSION=$pg_version" >> $GITHUB_ENV
 
