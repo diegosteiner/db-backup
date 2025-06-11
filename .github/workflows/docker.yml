@@ -4,27 +4,37 @@ name: Build
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: '0 3 * * 1'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         name: checkout
 
-      - uses: docker/setup-buildx-action@v1
+      - uses: docker/setup-buildx-action@v3
         name: buildx
 
-      - uses: docker/login-action@v1
+      - uses: docker/login-action@v3
         name: docker login
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Extract pg_dump version
+        id: pg_dump_version
+        run: |
+          version=$(pg_dump --version | grep -oP '\d+\.\d+')
+          echo "PG_VERSION=$version" >> $GITHUB_ENV
+
       - name: docker build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ghcr.io/diegosteiner/db-backup:latest
+          tags: |
+            ghcr.io/diegosteiner/db-backup:${{ env.PG_VERSION }}
+            ghcr.io/diegosteiner/db-backup:latest
